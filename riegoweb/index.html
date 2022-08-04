@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        var estado="";
+        const wurl="http://riegoapi.somee.com/api/bombas";
+        function leerBomba(){
+            var jqxhr = $.get( wurl, function() {
+            var color="";
+            console.log(jqxhr.responseJSON[0].status);
+            if( String(jqxhr.responseJSON[0].status) ==="false")
+            {
+                estado="Apagada";
+                color="red";
+            }
+            else
+            {
+                estado="Encendida";
+                color="yellow";
+            }
+                var tabla="";
+
+                tabla+=" ";
+                tabla+="<label style='font-size: xx-large;color:white;'>Estado de la bomba:</label><label style='font-size: xx-large; background:black;color:"+color+"'> "+ estado +"</label></br>";
+                if( String(jqxhr.responseJSON[0].status) ==="false")
+                    tabla+="<button onclick='encenderBomba()' style='font-size: large; color:blue'>Encender Bomba</button>";
+                else
+                    tabla+="<button onclick='apagarBomba()' style='font-size: large; color:red'>Apagar Bomba</button>";
+                tabla+="</div>";
+
+                const HTMLResponse=document.querySelector('#bomba');
+                HTMLResponse.innerHTML=tabla;
+            })
+            
+            
+        }
+        function encenderBomba(){
+            let datos={
+                id:1,
+                status:"true"
+            }
+            $.post(wurl,datos,function(){
+                location.reload();
+            });
+        }
+        function apagarBomba(){
+            let datos={
+                id:1,
+                status:"false"
+            }
+            $.post(wurl,datos,function(){
+                location.reload();
+            });
+        }
+
+        setTimeout(function(){
+        window.location.reload(1);
+        }, 5000);
+    </script>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Monitoreo de Riego</title>
+    </head>
+    <body style="background:black ;" onload="leerBomba()">
+        <div style="text-align:center ; ">
+        <h2 style='color:white;'>VALORES ACTUALES</h2>
+        <div id="bomba"></div>
+
+            <div id="app"> 
+                <script src="script.js" type="module"></script>  
+            </div>
+            
+        </div>
+
+    </body>
+</html>
