@@ -1,8 +1,13 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         var estado="";
+        var labels;
+        var data;
+        var config;
+        var myChart;
         const wurl="http://riegoapi.somee.com/api/bombas";
         function leerBomba(){
             var jqxhr = $.get( wurl, function() {
@@ -31,8 +36,8 @@
                 const HTMLResponse=document.querySelector('#bomba');
                 HTMLResponse.innerHTML=tabla;
             })
-            
-            
+
+            leergrafica();
         }
         function encenderBomba(){
             let datos={
@@ -53,7 +58,40 @@
             });
         }
 
-        setTimeout(function(){
+        function leergrafica(){
+            var wurl="http://riegoapi.somee.com/api/historials";
+            var jqxhr = $.get( wurl, function() {
+                let labels=[];
+                var midato=[];
+                for(var i=0;i<jqxhr.responseJSON.length;i++)
+                {
+                    labels.push(jqxhr.responseJSON[i].id)
+                    midato.push(jqxhr.responseJSON[i].dato)
+                }
+
+                let data={
+                    labels: labels,
+                    datasets: [{
+                    label: 'Historico de Humedad',
+                    backgroundColor: 'rgb(7, 5, 113)',/*'rgb(255, 99, 132)'*/
+                    borderColor: 'rgb(3, 0, 202)',
+                    data: midato,
+                    }]
+                };
+
+                let config = {
+                    type: 'line',
+                    data: data,
+                    options: {}
+                };
+                let myChart = new Chart(
+                    document.getElementById('myChart'),
+                    config
+                );
+
+            })
+        }
+    setTimeout(function(){
         window.location.reload(1);
         }, 5000);
     </script>
@@ -66,12 +104,13 @@
     <body style="background:black ;" onload="leerBomba()">
         <div style="text-align:center ; ">
         <h2 style='color:white;'>VALORES ACTUALES</h2>
-        <div id="bomba"></div>
-
+            <div id="bomba"></div>
             <div id="app"> 
                 <script src="script.js" type="module"></script>  
             </div>
-            
+            <div style="width: 80%;background-color: lightgoldenrodyellow; margin: 0 auto;;">
+                <canvas id="myChart" ></canvas>
+            </div>
         </div>
 
     </body>
